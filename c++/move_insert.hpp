@@ -77,9 +77,9 @@ class move_insert_c_cdag {
 #ifdef EXT_DEBUG
   std::cerr << "* Proposing to insert:" << std::endl;
   std::cerr << "Cdag(" << op1.block_index << "," << op1.inner_index << ")";
-  std::cerr << " at " << tau1 << std::endl;
+  std::cerr << " at " << double(tau1) << std::endl;
   std::cerr << "C(" << op2.block_index << "," << op2.inner_index << ")";
-  std::cerr << " at " << tau2 << std::endl;
+  std::cerr << " at " << double(tau2) << std::endl;
 #endif
 
   // record the length of the proposed insertion
@@ -116,6 +116,7 @@ class move_insert_c_cdag {
 
   // Insert in the det. Returns the ratio of dets (Cf det_manip doc).
   auto det_ratio = det.try_insert(num_c_dag, num_c, {tau1, op1.inner_index}, {tau2, op2.inner_index});
+  //det_ratio = 1;
 
   // acceptance probability
   double t_ratio = std::pow(block_size * config.beta() / double(det.size() + 1), 2);
@@ -127,12 +128,16 @@ class move_insert_c_cdag {
 
   // computation of the new trace after insertion
   new_trace = data.imp_trace.estimate(p_yee, random_number);
+  //new_trace = data.imp_trace.estimate(-1.0, random_number);
   if (new_trace == 0.0) {
 #ifdef EXT_DEBUG
    std::cout << "trace == 0" << std::endl;
 #endif
    return 0;
   }
+#ifdef EXT_DEBUG
+  std::cerr << "old Trace: " << data.trace << std::endl;
+#endif
   auto trace_ratio = new_trace / data.trace;
   if (!std::isfinite(trace_ratio)) TRIQS_RUNTIME_ERROR << "trace_ratio not finite" << new_trace << "  "<< data.trace<<"  "<< new_trace /data.trace ;
 
@@ -143,7 +148,7 @@ class move_insert_c_cdag {
   std::cerr << "Det ratio: " << det_ratio << '\t';
   std::cerr << "Prefactor: " << t_ratio << '\t';
   std::cerr << "Weight: " << p* t_ratio << std::endl;
-  std::cerr << "p_yee* newtrace: " << p_yee * new_trace<< std::endl;
+  //std::cerr << "p_yee* newtrace: " << p_yee * new_trace<< std::endl;
 #endif
 
   if (!std::isfinite(p * t_ratio)) TRIQS_RUNTIME_ERROR << "p * t_ratio not finite p : " << p << " t_ratio :  "<< t_ratio;
@@ -168,7 +173,7 @@ class move_insert_c_cdag {
   if (record_histograms) histos["shift_length_accepted"] << delta_tau;
 
 #ifdef EXT_DEBUG
-  std::cerr << "* Configuration after: " << std::endl;
+  std::cerr << "* Configuration after accept:" << std::endl;
   std::cerr << config;
 #endif
 
@@ -180,7 +185,7 @@ class move_insert_c_cdag {
  void reject() {
   data.imp_trace.cancel_insert();
 #ifdef EXT_DEBUG
-  std::cerr << "* Configuration after: " << std::endl;
+  std::cerr << "* Configuration after reject:" << std::endl;
   std::cerr << config;
 #endif
 

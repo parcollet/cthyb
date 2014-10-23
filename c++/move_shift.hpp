@@ -70,7 +70,7 @@ class move_shift_operator {
   // By choosing an *operator* in config directly, not bias based on det size introduced
   const int config_size(config.size());
   if (config_size==0) return 0;
-  const int op_pos_in_config((rng(config_size)));
+  const int op_pos_in_config(config_size-1-(rng(config_size)));
 
   // --- Find operator (and its characteristics) from the configuration
   auto itconfig = config.begin();
@@ -142,7 +142,8 @@ class move_shift_operator {
 
     op_pos_in_det = 0;
     // Choose new random time, can be anywhere between beta and 0
-    tau_new = time_pt::random(rng, config.beta(), config.beta());
+    auto tr = (is_dagger ? det.get_y(0).first : det.get_x(0).first);
+    tau_new = tr+time_pt::random(rng, config.beta(), config.beta());
 
   }
 
@@ -159,11 +160,11 @@ class move_shift_operator {
   std::cerr << "* Proposing to shift:" << std::endl;
   std::cerr << (is_dagger ? "Cdag" : "C");
   std::cerr << "(" << op_old.block_index << "," << op_old.inner_index << ")";
-  std::cerr << " tau = " << tau_old << std::endl;
+  std::cerr << " tau = " << double(tau_old) << std::endl;
   std::cerr << " to " << std::endl;
   std::cerr << (is_dagger ? "Cdag" : "C");
   std::cerr << "(" << op_new.block_index << "," << op_new.inner_index << ")";
-  std::cerr << " tau = " << tau_new << std::endl;
+  std::cerr << " tau = " << double(tau_new) << std::endl;
 #endif
 
   // Try to insert the new operator at shifted time in the tree
@@ -190,6 +191,7 @@ class move_shift_operator {
 
   // Replace old row/column with new operator time/inner_index. Returns the ratio of dets (Cf det_manip doc).
   auto det_ratio = (is_dagger ? det.try_change_row(op_pos_in_det, {tau_new,op_new.inner_index}) : det.try_change_col(op_pos_in_det, {tau_new,op_new.inner_index}));
+  //det_ratio = 1;
 
   // for quick abandon
   double random_number = rng.preview();
@@ -198,6 +200,7 @@ class move_shift_operator {
 
   // --- Compute the trace ratio
   new_trace = data.imp_trace.estimate(p_yee, random_number);
+//  new_trace = data.imp_trace.estimate(-1.0, random_number);
   if (new_trace == 0.0) {
 #ifdef EXT_DEBUG
    std::cout << "trace == 0" << std::endl;
@@ -214,7 +217,7 @@ class move_shift_operator {
   std::cerr << "Trace ratio: " << trace_ratio << '\t';
   std::cerr << "Det ratio: " << det_ratio << '\t';
   std::cerr << "Weight: " << p << std::endl;
-  std::cerr << "p_yee* newtrace: " << p_yee * new_trace<< std::endl;
+  //std::cerr << "p_yee* newtrace: " << p_yee * new_trace<< std::endl;
 #endif
 
   return p;
@@ -238,7 +241,7 @@ class move_shift_operator {
   if (record_histograms) histos["length_accepted"] << delta_tau;
 
 #ifdef EXT_DEBUG
-  std::cerr << "* Configuration after: " << std::endl;
+  std::cerr << "* Configuration after accept:" << std::endl;
   std::cerr << config;
 #endif
 
@@ -250,7 +253,7 @@ class move_shift_operator {
  void reject() {
   data.imp_trace.cancel_shift();
 #ifdef EXT_DEBUG
-  std::cerr << "* Configuration after: " << std::endl;
+  std::cerr << "* Configuration after reject:" << std::endl;
   std::cerr << config;
 #endif
  }

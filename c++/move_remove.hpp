@@ -62,8 +62,8 @@ class move_remove_c_cdag {
   int num_c_dag = rng(det_size), num_c = rng(det_size);
 #ifdef EXT_DEBUG
   std::cerr << "* Proposing to remove: ";
-  std::cerr << num_c_dag << "-th Cdag(" << block_index << ",...), ";
-  std::cerr << num_c << "-th C(" << block_index << ",...)" << std::endl;
+  std::cerr << num_c_dag+1 << "-th Cdag(" << block_index << ",...), ";
+  std::cerr << num_c+1 << "-th C(" << block_index << ",...)" << std::endl;
 #endif
 
   // now mark 2 nodes for deletion
@@ -71,6 +71,7 @@ class move_remove_c_cdag {
   tau2 = data.imp_trace.try_delete(num_c_dag, block_index, true);
 
   auto det_ratio = det.try_remove(num_c_dag, num_c);
+  //det_ratio = 1;
 
   // acceptance probability
   double t_ratio = std::pow(block_size * config.beta() / double(det_size), 2); // FIXME det_size or det.size()
@@ -82,6 +83,7 @@ class move_remove_c_cdag {
 
   // recompute the trace
   new_trace = data.imp_trace.estimate(p_yee, random_number);
+  //new_trace = data.imp_trace.estimate(-1.0, random_number);
   if (new_trace == 0.0) {
 #ifdef EXT_DEBUG
    std::cout << "trace == 0" << std::endl;
@@ -121,10 +123,10 @@ class move_remove_c_cdag {
   data.update_sign();
   data.trace = new_trace;
 
-#ifdef EXT_DEBUG
-  std::cerr << "* Configuration after: " << std::endl;
-  std::cerr << config;
-#endif
+//#ifdef EXT_DEBUG
+//  std::cerr << "* Configuration after accept:" << std::endl;
+//  std::cerr << config;
+//#endif
 
   return data.current_sign / data.old_sign;
  }
@@ -134,7 +136,7 @@ class move_remove_c_cdag {
  void reject() {
   data.imp_trace.cancel_delete();
 #ifdef EXT_DEBUG
-  std::cerr << "* Configuration after: " << std::endl;
+  std::cerr << "* Configuration after reject:" << std::endl;
   std::cerr << config;
 #endif
 

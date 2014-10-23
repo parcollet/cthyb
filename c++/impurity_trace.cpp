@@ -271,18 +271,20 @@ impurity_trace::trace_t impurity_trace::compute_trace(bool to_machine_precision,
 
  double epsilon = (to_machine_precision ? 1.e-15 : 0.333);
 
- if (tree_size == 0) return sosp->partition_function(config->beta()); // simplifies later code
+ if (tree_size == 0) {
+  return sosp->partition_function(config->beta()); // simplifies later code
+ }
 
  auto root = tree.get_root();
  double dtau = config->beta() - tree.min_key() + tree.max_key(); // beta - tmax + tmin ! the tree is in REVERSE order
 
-#ifdef EXT_DEBUG
- std::cout << " Trace compu ---------------" << std::endl;
- tree.print(std::cout);
- std::cout << "dtau = " << dtau << std::endl;
- std::cout << *config << std::endl;
- tree.graphviz(std::ofstream("tree_start_compute_trace"));
-#endif
+//#ifdef EXT_DEBUG
+// std::cout << " Trace compu ---------------" << std::endl;
+// tree.print(std::cout);
+// std::cout << "dtau = " << dtau << std::endl;
+// std::cout << *config << std::endl;
+// tree.graphviz(std::ofstream("tree_start_compute_trace"));
+//#endif
 
  auto log_epsilon0 = -std::log(1.e-15);
  std::vector<std::pair<double, int>> to_sort1, to_sort;

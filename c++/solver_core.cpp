@@ -48,9 +48,9 @@ solver_core::solver_core(double beta_, std::map<std::string,std::vector<int>> co
     block_names.push_back(block.first);
     int n = block.second.size();
     g0_iw_blocks.push_back(gf<imfreq>{{beta, Fermion, n_iw}, {n, n}});
-    g_tau_blocks.push_back(gf<imtime>{{beta, Fermion, n_tau, full_bins}, {n, n}});
+    g_tau_blocks.push_back(gf<imtime>{{beta, Fermion, n_tau, half_bins}, {n, n}});
     g_l_blocks.push_back(gf<legendre>{{beta, Fermion, static_cast<size_t>(n_l)}, {n,n}});
-    delta_tau_blocks.push_back(gf<imtime>{{beta, Fermion, n_tau, full_bins}, {n, n}});
+    delta_tau_blocks.push_back(gf<imtime>{{beta, Fermion, n_tau, half_bins}, {n, n}});
   }
 
   _G0_iw = make_block_gf(block_names, g0_iw_blocks);

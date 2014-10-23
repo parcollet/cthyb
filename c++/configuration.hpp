@@ -55,9 +55,14 @@ struct configuration {
  oplist_t::const_iterator end() const { return oplist.end(); }
  
  friend std::ostream& operator<<(std::ostream& out, configuration const& c) {
-  for (auto const& op : c)
-   out << "tau = " << op.first << " : " << (op.second.dagger ? "Cdag(" : "C(") << op.second.block_index << ","
-       << op.second.inner_index << ")\n";
+  for (auto op = c.oplist.rbegin(); op!=c.oplist.rend(); ++op) {
+  //for (auto const& op : c) {
+   //out << "tau = " << op.first << " : " << (op.second.dagger ? "Cdag(" : "C(") << op.second.block_index << ","
+   int b = op->second.block_index;
+   int b1 = b % 3;
+   int b2 = b / 3;
+   out << " time = " << double(op->first) << "  Operator C" << (op->second.dagger ? "dag" : "") << ((b2 == 0) ? "up-" : "down-" ) << b1 << "0\n";
+  }
   return out;
  }
 
