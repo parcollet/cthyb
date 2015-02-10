@@ -38,6 +38,11 @@ struct qmc_data {
  sorted_spaces const &sosp;                     // Diagonalization of the atomic problem
  mutable impurity_trace imp_trace; // Calculator of the trace
  std::vector<int> n_inner; 
+ bool proposed_move_ok;
+ time_pt proposed_tau1, proposed_tau2;
+ int proposed_block;
+ int proposed_inner1, proposed_inner2;
+ double proposed_delta, proposed_acceptance;
 
  using trace_t = impurity_trace::trace_t;
 
@@ -74,7 +79,8 @@ struct qmc_data {
       imp_trace(config, sosp, p),
       current_sign(1),
       old_sign(1),
-      n_inner(n_inner) {
+      n_inner(n_inner),
+      proposed_move_ok(false) {
   trace = imp_trace.estimate();
   dets.clear();
   for (auto const & bl : delta.mesh()) dets.emplace_back(delta_block_adaptor(delta[bl]), 100);

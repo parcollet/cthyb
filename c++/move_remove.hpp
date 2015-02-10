@@ -58,6 +58,9 @@ class move_remove_c_cdag {
  
  mc_weight_type attempt() {
 
+  // No Proposed move measurement
+  data.proposed_move_ok = false;
+
 #ifdef EXT_DEBUG
   std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
   std::cerr << "* Attempt for move_remove_c_cdag (block " << block_index << ")" << std::endl;

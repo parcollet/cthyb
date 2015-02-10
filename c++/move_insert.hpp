@@ -104,6 +104,16 @@ class move_insert_c_cdag {
   auto& det = data.dets[block_index];
   int det_size = det.size();
 
+  // Proposed move measurement
+  if (det_size == 0) {
+   data.proposed_move_ok = true;
+   data.proposed_tau1 = tau1;
+   data.proposed_tau2 = tau2;
+   data.proposed_block = block_index;
+   data.proposed_inner1 = rs1;
+   data.proposed_inner2 = rs2;
+  }
+
   // Find the position for insertion in the determinant
   // NB : the determinant stores the C in decreasing time order.
   int num_c_dag, num_c;
@@ -116,6 +126,9 @@ class move_insert_c_cdag {
 
   // Insert in the det. Returns the ratio of dets (Cf det_manip doc).
   auto det_ratio = det.try_insert(num_c_dag, num_c, {tau1, op1.inner_index}, {tau2, op2.inner_index});
+
+  // Proposed move measurement
+  data.proposed_delta = det_ratio;
 
   // proposition probability
   double t_ratio = std::pow(block_size * config.beta() / double(det.size() + 1), 2);
@@ -138,6 +151,9 @@ class move_insert_c_cdag {
 
   mc_weight_type p = trace_ratio * det_ratio;
 
+  // Proposed move measurement
+  data.proposed_acceptance = p;
+
 #ifdef EXT_DEBUG
   std::cerr << "Trace ratio: " << trace_ratio << '\t';
   std::cerr << "Det ratio: " << det_ratio << '\t';
@@ -153,6 +169,9 @@ class move_insert_c_cdag {
  //----------------
 
  mc_weight_type accept() {
+
+  // No Proposed move measurement
+  data.proposed_move_ok = false;
 
   // insert in the tree
   data.imp_trace.confirm_insert();

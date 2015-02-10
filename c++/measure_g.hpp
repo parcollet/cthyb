@@ -61,6 +61,11 @@ struct measure_g {
    this->g_tau[closest_mesh_pt(double(y.first - x.first))](y.second, x.second) +=
        (y.first >= x.first ? real(s) : -real(s)) * M * corr;
   });
+
+  if (data.proposed_move_ok) {
+    this->g_tau[closest_mesh_pt(double(data.proposed_tau2 - data.proposed_tau1))](data.proposed_inner2, data.proposed_inner1) +=
+      (data.proposed_tau2 >= data.proposed_tau1 ? real(s) : -real(s)) * (data.proposed_acceptance/data.proposed_delta);
+  }
  }
  // ---------------------------------------------
 
