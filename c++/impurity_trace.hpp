@@ -224,7 +224,7 @@ class impurity_trace {
  public:
  // Find and mark as deleted the nth operator with fixed dagger and block_index
  // n=0 : first operator, n=1, second, etc...
- time_pt try_delete(int n, int block_index, bool dagger) noexcept {
+ std::pair<time_pt,int> try_delete(int n, int block_index, bool dagger) noexcept {
   // traverse the tree, looking for the nth operator of the correct dagger, block_index
   int i = 0;
   node x = find_if(tree, [&](node no) {
@@ -236,7 +236,7 @@ class impurity_trace {
   tree.set_modified_from_root_to(x->key);
   x->delete_flag = true; // mark the node for deletion
   tree_size--;
-  return x->key;
+  return {x->key,x->op.inner_index};
  }
 
  // Clean all the delete flags

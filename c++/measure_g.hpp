@@ -34,14 +34,14 @@ struct measure_g {
 
  qmc_data const& data;
  gf_view<imtime> g_tau;
- int a_level;
+ int block_index;
  double beta;
  mc_sign_type z;
  int64_t num;
  mc_sign_type average_sign;
 
- measure_g(int a_level, gf_view<imtime> g_tau, qmc_data const& data)
-    : data(data), g_tau(g_tau), a_level(a_level), beta(data.config.beta()) {
+ measure_g(int block_index, gf_view<imtime> g_tau, qmc_data const& data)
+    : data(data), g_tau(g_tau), block_index(block_index), beta(data.config.beta()) {
   z = 0;
   num = 0;
  }
@@ -56,15 +56,16 @@ struct measure_g {
 
   z += s * corr;
 
-  foreach(data.dets[a_level], [this, corr, s](std::pair<time_pt, int> const& x, std::pair<time_pt, int> const& y, double M) {
+  foreach(data.dets[block_index], [this, corr, s](std::pair<time_pt, int> const& x, std::pair<time_pt, int> const& y, double M) {
    // beta-periodicity is implicit in the argument, just fix the sign properly
    this->g_tau[closest_mesh_pt(double(y.first - x.first))](y.second, x.second) +=
        (y.first >= x.first ? real(s) : -real(s)) * M * corr;
   });
 
-  if (data.proposed_move_ok) {
-    this->g_tau[closest_mesh_pt(double(data.proposed_tau2 - data.proposed_tau1))](data.proposed_inner2, data.proposed_inner1) +=
-      (data.proposed_tau2 >= data.proposed_tau1 ? real(s) : -real(s)) * (data.proposed_acceptance/data.proposed_delta);
+  auto const& proposed_data = data.proposed_data[block_index];
+  if (proposed_data.active) {
+    this->g_tau[closest_mesh_pt(double(proposed_data.tau2 - proposed_data.tau1))](proposed_data.inner2, proposed_data.inner1) +=
+      (proposed_data.tau2 >= proposed_data.tau1 ? real(s) : -real(s)) * (proposed_data.acceptance/proposed_data.delta);
   }
  }
  // ---------------------------------------------

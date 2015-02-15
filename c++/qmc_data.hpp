@@ -37,12 +37,17 @@ struct qmc_data {
  std::map<std::pair<int,int>,int> linindex;     // Linear index constructed from block and inner indices 
  sorted_spaces const &sosp;                     // Diagonalization of the atomic problem
  mutable impurity_trace imp_trace; // Calculator of the trace
- std::vector<int> n_inner; 
- bool proposed_move_ok;
- time_pt proposed_tau1, proposed_tau2;
- int proposed_block;
- int proposed_inner1, proposed_inner2;
- double proposed_delta, proposed_acceptance;
+ std::vector<int> n_inner;
+
+ // Data for the measure-on-proposal mechanism
+ struct proposed_data_t {
+  bool active = false;
+  time_pt tau1, tau2;
+  int inner1, inner2;
+  double delta;
+  double acceptance;
+ };
+ std::vector<proposed_data_t> proposed_data;
 
  using trace_t = impurity_trace::trace_t;
 
@@ -80,7 +85,7 @@ struct qmc_data {
       current_sign(1),
       old_sign(1),
       n_inner(n_inner),
-      proposed_move_ok(false) {
+      proposed_data(delta.mesh().size()) {
   trace = imp_trace.estimate();
   dets.clear();
   for (auto const & bl : delta.mesh()) dets.emplace_back(delta_block_adaptor(delta[bl]), 100);

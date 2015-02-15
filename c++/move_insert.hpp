@@ -57,6 +57,10 @@ class move_insert_c_cdag {
 
  mc_weight_type attempt() {
 
+ // Proposed move measurement
+ auto & proposed_data = data.proposed_data[block_index];
+ proposed_data.active = false;
+
 #ifdef EXT_DEBUG
   std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
   std::cerr << "* Attempt for move_insert_c_cdag (block " << block_index << ")" << std::endl;
@@ -104,16 +108,6 @@ class move_insert_c_cdag {
   auto& det = data.dets[block_index];
   int det_size = det.size();
 
-  // Proposed move measurement
-  if (det_size == 0) {
-   data.proposed_move_ok = true;
-   data.proposed_tau1 = tau1;
-   data.proposed_tau2 = tau2;
-   data.proposed_block = block_index;
-   data.proposed_inner1 = rs1;
-   data.proposed_inner2 = rs2;
-  }
-
   // Find the position for insertion in the determinant
   // NB : the determinant stores the C in decreasing time order.
   int num_c_dag, num_c;
@@ -126,9 +120,6 @@ class move_insert_c_cdag {
 
   // Insert in the det. Returns the ratio of dets (Cf det_manip doc).
   auto det_ratio = det.try_insert(num_c_dag, num_c, {tau1, op1.inner_index}, {tau2, op2.inner_index});
-
-  // Proposed move measurement
-  data.proposed_delta = det_ratio;
 
   // proposition probability
   double t_ratio = std::pow(block_size * config.beta() / double(det.size() + 1), 2);
@@ -150,20 +141,30 @@ class move_insert_c_cdag {
   if (!std::isfinite(trace_ratio)) TRIQS_RUNTIME_ERROR << "trace_ratio not finite" << new_trace << "  "<< data.trace<<"  "<< new_trace /data.trace ;
 
   mc_weight_type p = trace_ratio * det_ratio;
-
-  // Proposed move measurement
-  data.proposed_acceptance = p;
+  mc_weight_type p_total = p * t_ratio;
 
 #ifdef EXT_DEBUG
   std::cerr << "Trace ratio: " << trace_ratio << '\t';
   std::cerr << "Det ratio: " << det_ratio << '\t';
   std::cerr << "Prefactor: " << t_ratio << '\t';
-  std::cerr << "Weight: " << p* t_ratio << std::endl;
+  std::cerr << "Weight: " << p_total << std::endl;
   std::cerr << "p_yee* newtrace: " << p_yee * new_trace<< std::endl;
 #endif
 
-  if (!std::isfinite(p * t_ratio)) TRIQS_RUNTIME_ERROR << "p * t_ratio not finite p : " << p << " t_ratio :  "<< t_ratio;
-  return p * t_ratio;
+  if (!std::isfinite(p_total)) TRIQS_RUNTIME_ERROR << "p * t_ratio not finite p : " << p << " t_ratio :  "<< t_ratio;
+
+  // Proposed move measurement
+  if (det_size == 0 && std::abs(p_total) < 1.0) {
+   proposed_data.active = true;
+   proposed_data.tau1 = tau1;
+   proposed_data.tau2 = tau2;
+   proposed_data.inner1 = rs1;
+   proposed_data.inner2 = rs2;
+   proposed_data.acceptance = std::abs(p_total);
+   proposed_data.delta = det_ratio;
+  }
+
+  return p_total;
  }
 
  //----------------
@@ -171,7 +172,7 @@ class move_insert_c_cdag {
  mc_weight_type accept() {
 
   // No Proposed move measurement
-  data.proposed_move_ok = false;
+  data.proposed_data[block_index].active = false;
 
   // insert in the tree
   data.imp_trace.confirm_insert();

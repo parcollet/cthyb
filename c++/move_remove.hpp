@@ -58,8 +58,8 @@ class move_remove_c_cdag {
  
  mc_weight_type attempt() {
 
-  // No Proposed move measurement
-  data.proposed_move_ok = false;
+ auto & proposed_data = data.proposed_data[block_index];
+ proposed_data.active = false;
 
 #ifdef EXT_DEBUG
   std::cerr << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << std::endl;
@@ -82,8 +82,9 @@ class move_remove_c_cdag {
 #endif
 
   // now mark 2 nodes for deletion
-  tau1 = data.imp_trace.try_delete(num_c, block_index, false);
-  tau2 = data.imp_trace.try_delete(num_c_dag, block_index, true);
+  int rs1, rs2;
+  std::tie(tau1,rs1) = data.imp_trace.try_delete(num_c, block_index, false);
+  std::tie(tau2,rs2) = data.imp_trace.try_delete(num_c_dag, block_index, true);
 
   // record the length of the proposed removal
   delta_tau = double(tau2 - tau1);
@@ -109,19 +110,32 @@ class move_remove_c_cdag {
   }
   auto trace_ratio = new_trace / data.trace;
   if (!std::isfinite(trace_ratio)) TRIQS_RUNTIME_ERROR << "trace_ratio not finite" << new_trace << "  "<< data.trace<<"  "<< new_trace /data.trace ;
- 
+
   mc_weight_type p = trace_ratio * det_ratio;
+  mc_weight_type p_total = p / t_ratio;
 
 #ifdef EXT_DEBUG
   std::cerr << "Trace ratio: " << trace_ratio << '\t';
   std::cerr << "Det ratio: " << det_ratio << '\t';
   std::cerr << "Prefactor: " << t_ratio << '\t';
-  std::cerr << "Weight: " << p/ t_ratio << std::endl;
+  std::cerr << "Weight: " << p_total << std::endl;
 #endif
 
   if (!std::isfinite(p)) TRIQS_RUNTIME_ERROR << "(remove) p not finite :" << p;
-  if (!std::isfinite(p / t_ratio)) TRIQS_RUNTIME_ERROR << "p / t_ratio not finite p : " << p << " t_ratio :  "<< t_ratio;
-  return p / t_ratio;
+  if (!std::isfinite(p_total)) TRIQS_RUNTIME_ERROR << "p / t_ratio not finite p : " << p << " t_ratio :  "<< t_ratio;
+
+  // Proposed move measurement
+  if (det_size == 1 && std::abs(p_total) > 0.0) {
+   proposed_data.active = true;
+   proposed_data.tau1 = tau1;
+   proposed_data.tau2 = tau2;
+   proposed_data.inner1 = rs1;
+   proposed_data.inner2 = rs2;
+   proposed_data.acceptance = 1 - std::min(1.0,std::abs(p_total));
+   proposed_data.delta = 1.0/det_ratio;
+  }
+
+  return p_total;
  }
 
  //----------------
@@ -134,7 +148,7 @@ class move_remove_c_cdag {
   // remove from the configuration
   config.erase(tau1);
   config.erase(tau2);
-  
+
   // remove from the determinants
   data.dets[block_index].complete_operation();
   data.update_sign();
@@ -152,6 +166,9 @@ class move_remove_c_cdag {
  //----------------
 
  void reject() {
+  // No Proposed move measurement
+  data.proposed_data[block_index].active = false;
+
   data.imp_trace.cancel_delete();
 #ifdef EXT_DEBUG
   std::cerr << "* Configuration after: " << std::endl;

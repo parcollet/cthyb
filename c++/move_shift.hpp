@@ -58,7 +58,7 @@ class move_shift_operator {
  mc_weight_type attempt() {
 
   // No Proposed move measurement
-  data.proposed_move_ok = false;
+  for(auto & pd : data.proposed_data) pd.active = false;
 
   // --- Choose an operator in configuration to shift at random
   // By choosing an *operator* in config directly, not bias based on det size introduced
