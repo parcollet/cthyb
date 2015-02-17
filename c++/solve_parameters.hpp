@@ -58,6 +58,9 @@ struct solve_parameters_t {
  /// Operator insertion/removal probabilities for different blocks
  std::map<std::string,double> proposal_prob = (std::map<std::string,double>{});
 
+ /// Use proposed measurements
+ bool use_proposed = false;
+
  solve_parameters_t() {}
  
  solve_parameters_t(real_operator_t h_loc, int n_cycles) : h_loc(h_loc), n_cycles(n_cycles) {}

@@ -65,7 +65,7 @@ struct measure_g {
   auto const& proposed_data = data.proposed_data[block_index];
   if (proposed_data.active) {
     this->g_tau[closest_mesh_pt(double(proposed_data.tau2 - proposed_data.tau1))](proposed_data.inner2, proposed_data.inner1) +=
-      (proposed_data.tau2 >= proposed_data.tau1 ? real(s) : -real(s)) * (proposed_data.acceptance/proposed_data.delta);
+      (proposed_data.tau2 >= proposed_data.tau1 ? real(s) : -real(s)) * (proposed_data.acceptance/proposed_data.delta) * corr;
   }
  }
  // ---------------------------------------------

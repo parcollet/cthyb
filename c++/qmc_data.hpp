@@ -40,6 +40,7 @@ struct qmc_data {
  std::vector<int> n_inner;
 
  // Data for the measure-on-proposal mechanism
+ bool use_proposed;
  struct proposed_data_t {
   bool active = false;
   time_pt tau1, tau2;
@@ -85,6 +86,7 @@ struct qmc_data {
       current_sign(1),
       old_sign(1),
       n_inner(n_inner),
+      use_proposed(p.use_proposed),
       proposed_data(delta.mesh().size()) {
   trace = imp_trace.estimate();
   dets.clear();

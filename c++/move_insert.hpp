@@ -130,7 +130,9 @@ class move_insert_c_cdag {
   double p_yee = std::abs(t_ratio * det_ratio / data.trace);
 
   // computation of the new trace after insertion
-  new_trace = data.imp_trace.estimate(p_yee, random_number);
+  if (data.use_proposed) new_trace = data.imp_trace.estimate(p_yee, 0.0);
+  else new_trace = data.imp_trace.estimate(p_yee, random_number);
+
   if (new_trace == 0.0) {
 #ifdef EXT_DEBUG
    std::cout << "trace == 0" << std::endl;
@@ -154,7 +156,7 @@ class move_insert_c_cdag {
   if (!std::isfinite(p_total)) TRIQS_RUNTIME_ERROR << "p * t_ratio not finite p : " << p << " t_ratio :  "<< t_ratio;
 
   // Proposed move measurement
-  if (det_size == 0 && std::abs(p_total) < 1.0) {
+  if (data.use_proposed && det_size == 0 && std::abs(p_total) < 1.0) {
    proposed_data.active = true;
    proposed_data.tau1 = tau1;
    proposed_data.tau2 = tau2;

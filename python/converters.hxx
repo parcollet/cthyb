@@ -1,6 +1,6 @@
 // DO NOT EDIT
 // Generated automatically using libclang using the command : 
-// wrapper_desc_generator.py ../c++/solver_core.hpp -p -mpytriqs.applications.impurity_solvers.cthyb -o cthyb --moduledoc "The cthyb solver"
+// wrapper_desc_generator.py ../c++/solver_core.hpp -p -mpytriqs.applications.impurity_solvers.cthyb -o cthyb --moduledoc "The cthyb solver" --libclang_location /usr/lib/llvm-3.5/lib/libclang.so -I/usr/include -I/usr/include/x86_64-linux-gnu -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/include -I/usr/lib/llvm-3.5/bin/../lib/clang/3.5.0/include -I/usr/local/include -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/c++/4.9/backward -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/x86_64-linux-gnu/c++/4.9 -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/c++/4.9
 
 
 // --- C++ Python converter for solve_parameters_t
@@ -27,6 +27,7 @@ template <> struct py_converter<solve_parameters_t> {
   PyDict_SetItemString( d, "measure_pert_order" , convert_to_python(x.measure_pert_order));
   PyDict_SetItemString( d, "make_histograms"    , convert_to_python(x.make_histograms));
   PyDict_SetItemString( d, "proposal_prob"      , convert_to_python(x.proposal_prob));
+  PyDict_SetItemString( d, "use_proposed"       , convert_to_python(x.use_proposed));
   return d;
  }
 
@@ -56,6 +57,7 @@ template <> struct py_converter<solve_parameters_t> {
   _get_optional(dic, "measure_pert_order" , res.measure_pert_order   , false);
   _get_optional(dic, "make_histograms"    , res.make_histograms      , false);
   _get_optional(dic, "proposal_prob"      , res.proposal_prob        , (std::map<std::string,double>{}));
+  _get_optional(dic, "use_proposed"       , res.use_proposed         , false);
   return res;
  }
 
@@ -86,7 +88,7 @@ template <> struct py_converter<solve_parameters_t> {
   std::stringstream fs, fs2; int err=0;
 
 #ifndef TRIQS_ALLOW_UNUSED_PARAMETERS
-  std::vector<std::string> ks, all_keys = {"h_loc","n_cycles","partition_method","quantum_numbers","length_cycle","n_warmup_cycles","random_seed","random_name","max_time","verbosity","move_shift","use_trace_estimator","measure_g_tau","measure_g_l","measure_pert_order","make_histograms","proposal_prob"};
+  std::vector<std::string> ks, all_keys = {"h_loc","n_cycles","partition_method","quantum_numbers","length_cycle","n_warmup_cycles","random_seed","random_name","max_time","verbosity","move_shift","use_trace_estimator","measure_g_tau","measure_g_l","measure_pert_order","make_histograms","proposal_prob","use_proposed"};
   pyref keys = PyDict_Keys(dic);
   if (!convertible_from_python<std::vector<std::string>>(keys, true)) {
    fs << "\nThe dict keys are not strings";
@@ -98,8 +100,8 @@ template <> struct py_converter<solve_parameters_t> {
     fs << "\n"<< ++err << " The parameter '" << k << "' is not recognized.";
 #endif
 
-  _check_mandatory<real_operator_t              >(dic, fs, err, "h_loc"              , "real_operator_t");
-  _check_mandatory<int                          >(dic, fs, err, "n_cycles"           , "int");
+  _check_mandatory<real_operator_t              >(dic, fs, err, "h_loc"              , "real_operator_t"); 
+  _check_mandatory<int                          >(dic, fs, err, "n_cycles"           , "int"); 
   _check_optional <std::string                  >(dic, fs, err, "partition_method"   , "std::string");
   _check_optional <std::vector<real_operator_t> >(dic, fs, err, "quantum_numbers"    , "std::vector<real_operator_t>");
   _check_optional <int                          >(dic, fs, err, "length_cycle"       , "int");
@@ -115,6 +117,7 @@ template <> struct py_converter<solve_parameters_t> {
   _check_optional <bool                         >(dic, fs, err, "measure_pert_order" , "bool");
   _check_optional <bool                         >(dic, fs, err, "make_histograms"    , "bool");
   _check_optional <std::map<std::string, double>>(dic, fs, err, "proposal_prob"      , "std::map<std::string, double>");
+  _check_optional <bool                         >(dic, fs, err, "use_proposed"       , "bool");
   if (err) goto _error;
   return true;
   
