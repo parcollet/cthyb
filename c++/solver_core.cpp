@@ -180,13 +180,13 @@ void solver_core::solve(solve_parameters_t const & params) {
   if (params.measure_g_tau) {
    auto& g_names = _G_tau.domain().names();
    for (size_t block = 0; block < _G_tau.domain().size(); ++block) {
-    qmc.add_measure(measure_g(block, _G_tau[block], data), "G measure (" + g_names[block] + ")");
+    qmc.add_measure(measure_g(block, _G_tau[block], data), "G measure (" + g_names[block] + ")", params.use_proposed);
    }
   }
   if (params.measure_g_l) {
    auto& g_names = _G_l.domain().names();
    for (size_t block = 0; block < _G_l.domain().size(); ++block) {
-    qmc.add_measure(measure_g_legendre(block, _G_l[block], data), "G_l measure (" + g_names[block] + ")");
+    qmc.add_measure(measure_g_legendre(block, _G_l[block], data), "G_l measure (" + g_names[block] + ")", params.use_proposed);
    }
   }
   if (params.measure_pert_order) {

@@ -39,6 +39,8 @@ class move_shift_operator {
  det_type::RollDirection roll_direction;
  int block_index;
 
+ mc_weight_type sign_copy;
+
  public:
  //-----------------------------------------------
 
@@ -190,7 +192,8 @@ class move_shift_operator {
   double p_yee = std::abs(det_ratio / data.trace);
 
   // --- Compute the trace ratio
-  new_trace = data.imp_trace.estimate(p_yee, random_number);
+  if (data.use_proposed) new_trace = data.imp_trace.estimate(p_yee, 0.0);
+  else new_trace = data.imp_trace.estimate(p_yee, random_number);
   if (new_trace == 0.0) {
 #ifdef EXT_DEBUG
    std::cout << "trace == 0" << std::endl;
@@ -214,6 +217,20 @@ class move_shift_operator {
  }
 
  //----------------
+
+ mc_weight_type reversible_accept() {
+  data.dets[block_index].reversible_accept();
+  sign_copy = data.old_sign;
+  data.update_sign(); // current_sign --> old_sign
+  return data.current_sign / data.old_sign;
+ }
+
+ void revert_accept() {
+  data.dets[block_index].revert_accept();
+  data.update_sign();
+  data.current_sign = data.old_sign;
+  data.old_sign = sign_copy;
+ }
 
  mc_weight_type accept() {
 
@@ -239,6 +256,14 @@ class move_shift_operator {
  }
 
  //----------------
+
+ void reversible_reject() {
+  data.dets[block_index].reversible_reject();
+ }
+
+ void revert_reject() {
+  data.dets[block_index].revert_reject();
+ }
 
  void reject() {
   data.imp_trace.cancel_shift();

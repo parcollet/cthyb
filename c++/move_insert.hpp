@@ -37,6 +37,8 @@ class move_insert_c_cdag {
  time_pt tau1, tau2;
  op_desc op1, op2;
 
+ mc_weight_type sign_copy;
+
  public:
  //-----------------------------------------------
 
@@ -126,7 +128,8 @@ class move_insert_c_cdag {
   double p_yee = std::abs(t_ratio * det_ratio / data.trace);
 
   // computation of the new trace after insertion
-  new_trace = data.imp_trace.estimate(p_yee, random_number);
+  if (data.use_proposed) new_trace = data.imp_trace.estimate(p_yee, 0.0);
+  else new_trace = data.imp_trace.estimate(p_yee, random_number);
   if (new_trace == 0.0) {
 #ifdef EXT_DEBUG
    std::cout << "trace == 0" << std::endl;
@@ -152,6 +155,20 @@ class move_insert_c_cdag {
 
  //----------------
 
+ mc_weight_type reversible_accept() {
+  data.dets[block_index].reversible_accept();
+  sign_copy = data.old_sign;
+  data.update_sign(); // current_sign --> old_sign
+  return data.current_sign / data.old_sign;
+ }
+
+ void revert_accept() {
+  data.dets[block_index].revert_accept();
+  data.update_sign();
+  data.current_sign = data.old_sign;
+  data.old_sign = sign_copy;
+ }
+
  mc_weight_type accept() {
 
   // insert in the tree
@@ -176,6 +193,14 @@ class move_insert_c_cdag {
  }
 
  //----------------
+
+ void reversible_reject() {
+  data.dets[block_index].reversible_reject();
+ }
+
+ void revert_reject() {
+  data.dets[block_index].revert_reject();
+ }
 
  void reject() {
   data.imp_trace.cancel_insert();

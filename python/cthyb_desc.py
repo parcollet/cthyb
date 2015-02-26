@@ -1,5 +1,6 @@
+
 # Generated automatically using the command :
-# wrapper_desc_generator.py ../c++/solver_core.hpp -p -mpytriqs.applications.impurity_solvers.cthyb -o cthyb --moduledoc "The cthyb solver"
+# wrapper_desc_generator.py ../c++/solver_core.hpp -p -mpytriqs.applications.impurity_solvers.cthyb -o cthyb --moduledoc "The cthyb solver" --libclang_location /usr/lib/llvm-3.5/lib/libclang.so -I/usr/include -I/usr/include/x86_64-linux-gnu -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/include -I/usr/lib/llvm-3.5/bin/../lib/clang/3.5.0/include -I/usr/local/include -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/c++/4.9/backward -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/x86_64-linux-gnu/c++/4.9 -I/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/c++/4.9
 from wrap_generator import *
 
 # The module
@@ -14,9 +15,10 @@ module.add_include("../c++/solver_core.hpp")
 
 # Add here anything to add in the C++ code at the start, e.g. namespace using
 module.add_preamble("""
-#include <triqs/python_tools/converters/pair.hpp>
 #include <triqs/python_tools/converters/map.hpp>
 #include <triqs/python_tools/converters/vector.hpp>
+#include <triqs/python_tools/converters/vector.hpp>
+#include <triqs/python_tools/converters/map.hpp>
 using namespace triqs::gfs;
 using triqs::utility::many_body_operator;
 using namespace cthyb;
@@ -51,7 +53,8 @@ c.add_method("""void solve (**cthyb::solve_parameters_t)""",
   measure_g_l         bool                          false                                          Measure G_l (Legendre)?
   measure_pert_order  bool                          false                                          Measure perturbation order?
   make_histograms     bool                          false                                          Make histograms of the trace computation?
-  proposal_prob       std::map<std::string, double> (std::map<std::string,double>{})               Operator insertion/removal probabilities for different blocks """)
+  proposal_prob       std::map<std::string, double> (std::map<std::string,double>{})               Operator insertion/removal probabilities for different blocks
+  use_proposed        bool                          false                                          Use proposed measurements                                     """)
 
 c.add_property(name = "last_solve_parameters",
                getter = cfunction("cthyb::solve_parameters_t get_last_solve_parameters ()"),
