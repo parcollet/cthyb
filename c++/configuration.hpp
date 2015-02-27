@@ -66,7 +66,7 @@ struct configuration {
   ar& boost::serialization::make_nvp("oplist", oplist) & boost::serialization::make_nvp("beta", beta_);
  }
 
- private:
+ public:
  double beta_;
  oplist_t oplist;
 };

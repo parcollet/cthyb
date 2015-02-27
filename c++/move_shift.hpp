@@ -219,6 +219,8 @@ class move_shift_operator {
  //----------------
 
  mc_weight_type reversible_accept() {
+  config.erase(tau_old);
+  config.insert(tau_new, op_new);
   data.dets[block_index].reversible_accept();
   sign_copy = data.old_sign;
   data.update_sign(); // current_sign --> old_sign
@@ -227,7 +229,8 @@ class move_shift_operator {
 
  void revert_accept() {
   data.dets[block_index].revert_accept();
-  data.update_sign();
+  config.erase(tau_new);
+  config.insert(tau_old, op_old);
   data.current_sign = data.old_sign;
   data.old_sign = sign_copy;
  }

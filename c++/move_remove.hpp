@@ -36,6 +36,7 @@ class move_remove_c_cdag {
  double delta_tau;
  qmc_data::trace_t new_trace;
  time_pt tau1, tau2;
+ op_desc op1, op2;
 
  mc_weight_type sign_copy;
 
@@ -127,6 +128,10 @@ class move_remove_c_cdag {
  //----------------
 
  mc_weight_type reversible_accept() {
+  op1 = config.oplist.at(tau1);
+  op2 = config.oplist.at(tau2);
+  config.erase(tau1);
+  config.erase(tau2);
   data.dets[block_index].reversible_accept();
   sign_copy = data.old_sign;
   data.update_sign(); // current_sign --> old_sign
@@ -135,7 +140,8 @@ class move_remove_c_cdag {
 
  void revert_accept() {
   data.dets[block_index].revert_accept();
-  data.update_sign();
+  config.insert(tau1, op1);
+  config.insert(tau2, op2);
   data.current_sign = data.old_sign;
   data.old_sign = sign_copy;
  }

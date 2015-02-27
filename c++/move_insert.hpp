@@ -156,6 +156,8 @@ class move_insert_c_cdag {
  //----------------
 
  mc_weight_type reversible_accept() {
+  config.insert(tau1, op1);
+  config.insert(tau2, op2);
   data.dets[block_index].reversible_accept();
   sign_copy = data.old_sign;
   data.update_sign(); // current_sign --> old_sign
@@ -164,7 +166,8 @@ class move_insert_c_cdag {
 
  void revert_accept() {
   data.dets[block_index].revert_accept();
-  data.update_sign();
+  config.erase(tau1);
+  config.erase(tau2);
   data.current_sign = data.old_sign;
   data.old_sign = sign_copy;
  }
