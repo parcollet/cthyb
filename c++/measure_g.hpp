@@ -32,7 +32,7 @@ using namespace triqs::gfs;
 struct measure_g {
  using mc_sign_type = std::complex<double>;
 
- qmc_data const& data;
+ qmc_data & data;
  gf_view<imtime> g_tau;
  int a_level;
  double beta;
@@ -40,7 +40,7 @@ struct measure_g {
  int64_t num;
  mc_sign_type average_sign;
 
- measure_g(int a_level, gf_view<imtime> g_tau, qmc_data const& data)
+ measure_g(int a_level, gf_view<imtime> g_tau, qmc_data & data)
     : data(data), g_tau(g_tau), a_level(a_level), beta(data.config.beta()) {
   z = 0;
   num = 0;
@@ -54,12 +54,20 @@ struct measure_g {
   auto corr = real(this->data.imp_trace.full_trace_over_estimator());
   if (!std::isfinite(corr)) TRIQS_RUNTIME_ERROR << " measure g :corr not finite" << corr;
 
-  z += s * corr;
+  std::vector<std::pair<time_pt, int>> x_vals, y_vals;
+  for (int i=0; i<data.dets[a_level].size(); i++) {
+    x_vals.push_back(data.dets[a_level].get_x(i));
+    y_vals.push_back(data.dets[a_level].get_y(i));
+  }
+  data.dets2[a_level].initialize(x_vals, y_vals);
+  auto detr = data.dets2[a_level].determinant() / data.dets[a_level].determinant();
 
-  foreach(data.dets[a_level], [this, corr, s](std::pair<time_pt, int> const& x, std::pair<time_pt, int> const& y, double M) {
+  z += s * corr * detr;
+
+  foreach(data.dets2[a_level], [this, corr, s, detr](std::pair<time_pt, int> const& x, std::pair<time_pt, int> const& y, double M) {
    // beta-periodicity is implicit in the argument, just fix the sign properly
    this->g_tau[closest_mesh_pt(double(y.first - x.first))](y.second, x.second) +=
-       (y.first >= x.first ? real(s) : -real(s)) * M * corr;
+       (y.first >= x.first ? real(s) : -real(s)) * M * corr * detr;
   });
  }
  // ---------------------------------------------

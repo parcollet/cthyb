@@ -61,6 +61,7 @@ struct qmc_data {
  };
 
  std::vector<det_manip::det_manip<delta_block_adaptor>> dets; // The determinants
+ std::vector<det_manip::det_manip<delta_block_adaptor>> dets2; // The determinants
  int current_sign, old_sign;                                  // Permutation prefactor
  trace_t trace;                                               // The current value of the trace
 
@@ -77,7 +78,17 @@ struct qmc_data {
       n_inner(n_inner) {
   trace = imp_trace.estimate();
   dets.clear();
-  for (auto const & bl : delta.mesh()) dets.emplace_back(delta_block_adaptor(delta[bl]), 100);
+  dets2.clear();
+  for (auto const & bl : delta.mesh()) dets2.emplace_back(delta_block_adaptor(delta[bl]), 100);
+  for (auto const & bl : delta.mesh()) {
+
+    auto delta_flat = make_clone(delta[bl]);
+    triqs::clef::placeholder<0> tau_;
+    double x = 0.90;
+    delta_flat(tau_) << x*delta_flat(tau_) - (1.0-x)*0.02;
+    dets.emplace_back(delta_block_adaptor(delta_flat), 100);
+
+  }
  }
 
  qmc_data(qmc_data const &) = default;
