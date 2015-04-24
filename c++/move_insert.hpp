@@ -66,6 +66,8 @@ class move_insert_c_cdag {
 //  data.imp_trace.tree.graphviz(std::ofstream("tree_before"));
 #endif
 
+  if ((data.dets[0].size() + data.dets[1].size()) == 1) return 0;
+
   // Pick up the value of alpha and choose the operators
   auto rs1 = rng(block_size), rs2 = rng(block_size);
   op1 = op_desc{block_index, rs1, true, data.linindex[std::make_pair(block_index, rs1)]};
