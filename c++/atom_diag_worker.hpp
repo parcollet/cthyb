@@ -34,11 +34,15 @@ struct atom_diag_worker {
  private:
  atom_diag* hdiag;
  int n_min, n_max;
- 
- // Create matrix of an operator acting from one subspace to another (returns matrix + number of its nonzero elements)
- matrix_t make_op_matrix(imperative_operator<hilbert_space, h_scalar_t> const& op, int from_sp, int to_sp) const;
 
  void complete();
  bool fock_state_filter(fock_state_t s);
+
+public:
+
+ // FIXME move this function elsewhere?
+ // FIXME make an overload for the full Hilbert space? (see quantum_number_eigenvalues2())
+ // Create matrix of an operator op acting from one subspace to another
+ matrix_t make_op_matrix(many_body_op_t const& op, int B, int Bp) const;
 };
 }

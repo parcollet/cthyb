@@ -28,7 +28,7 @@ namespace cthyb {
 using block_matrix_t = std::vector<matrix_t>;                         // block diagonal matrix
 using full_hilbert_space_state_t = triqs::arrays::vector<h_scalar_t>; // the big vector in the full Hilbert space
 using indices_t = fundamental_operator_set::indices_t;
-using quantum_number_t = double;                                      // qn operators are hermitian, hence it is double
+using quantum_number_t = double;                                      // qn operators are Hermitian, hence it is double
 
 // Division of Hilbert Space into sub hilbert spaces, using the quantum numbers.
 class atom_diag {
@@ -37,7 +37,7 @@ class atom_diag {
  public:
  struct eigensystem_t {
   triqs::arrays::vector<double> eigenvalues; // in ascending order, the GS energy is set to 0 at initialisation
-  matrix_t unitary_matrix;         // H = U * \Lambda * U^+, from the Fock space basis to the block basis
+  matrix_t unitary_matrix;                   // H = U * \Lambda * U^+, from the Fock space basis to the block basis
  };
 
  TRIQS_CPP2PY_IGNORE atom_diag() = default;
@@ -50,8 +50,11 @@ class atom_diag {
  /// The fundamental operator set used at construction
  fundamental_operator_set const& get_fops() const { return fops; }
 
+ /// The full Hilbert space
+ TRIQS_CPP2PY_IGNORE hilbert_space const& get_full_hilbert_space() const { return full_hs; }
+
  /// Dimension of the full Hilbert space
- int get_full_hilbert_space_dim() const { return _total_dim; }
+ int get_full_hilbert_space_dim() const { return full_hs.size(); }
 
  /// Number of Blocks
  int n_blocks() const { return eigensystems.size(); }
@@ -164,6 +167,7 @@ class atom_diag {
 
  many_body_op_t h_atomic;                                   // Atomic hamiltonian
  fundamental_operator_set fops;                             // keep it to compute the local gf
+ hilbert_space full_hs;                                     // Full Hilbert space of the atomic problem
  std::vector<sub_hilbert_space> sub_hilbert_spaces;         // The subspace for each block, i.e. the list of fock states
  std::vector<eigensystem_t> eigensystems;                   // Eigensystem in each subspace
  matrix<long> creation_connection, annihilation_connection; // creation_connection[operator_linear_index][B] -> B', final block
@@ -178,7 +182,6 @@ class atom_diag {
  // do not serialize. rebuild by complete_init
  void complete_init();
  std::vector<int> first_eigstate_of_block; // Index of the first eigenstate of each block
- int _total_dim;                           // total_dimension of the Hilbert_space
 
  friend std::ostream& operator<<(std::ostream& os, atom_diag const& ss);
  friend std::string get_triqs_hdf5_data_scheme(atom_diag const&) { return "AtomDiag"; }

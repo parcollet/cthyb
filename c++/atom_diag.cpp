@@ -32,14 +32,15 @@ using std::string;
 namespace cthyb {
 
 atom_diag::atom_diag(many_body_op_t const& h_, fundamental_operator_set const& fops, std::vector<many_body_op_t> const& qn_vector)
-   : h_atomic(h_), fops(fops) {
+   : h_atomic(h_), fops(fops), full_hs(fops) {
  atom_diag_worker{this}.partition_with_qn(qn_vector);
  complete_init();
 }
 
 //-----------------------------
 
-atom_diag::atom_diag(many_body_op_t const& h_, fundamental_operator_set const& fops) : h_atomic(h_), fops(fops) {
+atom_diag::atom_diag(many_body_op_t const& h_, fundamental_operator_set const& fops)
+  : h_atomic(h_), fops(fops), full_hs(fops) {
  atom_diag_worker{this}.autopartition();
  complete_init();
 }
@@ -47,11 +48,8 @@ atom_diag::atom_diag(many_body_op_t const& h_, fundamental_operator_set const& f
 // -----------------------------------------------------------------
 
 void atom_diag::complete_init() {
- _total_dim = 0;
- for (auto const& es : eigensystems) _total_dim += es.eigenvalues.size();
-
  // Calculate the index of the first eigenstate of each block
- first_eigstate_of_block.resize(_total_dim, 0);
+ first_eigstate_of_block.resize(n_blocks(), 0);
  for (int bl = 1; bl < n_blocks(); ++bl) first_eigstate_of_block[bl] = first_eigstate_of_block[bl - 1] + get_block_dim(bl - 1);
 }
 
@@ -59,9 +57,7 @@ void atom_diag::complete_init() {
 std::vector<std::vector<double>> atom_diag::get_energies() const {
  std::vector<std::vector<double>> R;
  for (auto const& es : eigensystems) { 
-  std::vector<double> v(es.eigenvalues.size());
-  for (int i = 0; i < es.eigenvalues.size(); ++i) v[i] = es.eigenvalues[i];
-  R.push_back(v);
+  R.emplace_back(std::begin(es.eigenvalues), std::end(es.eigenvalues));
  }
  return R;
 }
@@ -69,9 +65,10 @@ std::vector<std::vector<double>> atom_diag::get_energies() const {
 // -----------------------------------------------------------------
 
 full_hilbert_space_state_t atom_diag::get_vacuum_state() const {
- full_hilbert_space_state_t st(_total_dim);
+ // FIXME: what basis should we use?
+ full_hilbert_space_state_t st(full_hs.size());
  st() = 0;
- st[flatten_block_index(vacuum_block_index, vacuum_inner_index)] = 1;
+ st[full_hs.get_state_index(0)] = 1;
  return st;
 }
 
@@ -184,35 +181,6 @@ std::pair<int, matrix<h_scalar_t>> atom_diag::matrix_element_of_monomial(operato
  return {B, std::move(m)};
 }
 
-}
-
-// FIXME move into the library
-namespace triqs {
-namespace hilbert_space {
- // -----------------------------------------------------------------
- std::string get_triqs_hdf5_data_scheme(sub_hilbert_space const&) { return "sub_hilbert_space"; }
-
- // -----------------------------------------------------------------
-
- void h5_write(h5::group fg, std::string const& name, sub_hilbert_space const& x) {
-  auto gr = fg.create_group(name);
-  h5_write(gr, "fock_states", x.get_all_fock_states());
-  h5_write(gr, "index", x.get_index());
- }
-
- // -----------------------------------------------------------------
- void h5_read(h5::group fg, std::string const& name, sub_hilbert_space& x) {
-  using h5::h5_read;
-  auto gr = fg.open_group(name);
-  auto fs = h5_read<std::vector<fock_state_t>>(gr, "fock_states");
-  auto index = h5_read<int>(gr, "index");
-  x = sub_hilbert_space{index};
-  for (auto const& s : fs) x.add_fock_state(s);
- }
-}
-}
-
-namespace cthyb {
 // -----------------------------------------------------------------
 std::string get_triqs_hdf5_data_scheme(atom_diag::eigensystem_t const&) { return "atom_diag::eigensystem_t"; }
 

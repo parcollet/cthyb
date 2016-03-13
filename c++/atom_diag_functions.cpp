@@ -1,4 +1,5 @@
 #include "./atom_diag_functions.hpp"
+#include "./atom_diag_worker.hpp"
 
 namespace cthyb {
 
@@ -6,8 +7,7 @@ double const threshold = 1.e-11;
 
 double partition_function(atom_diag const& atom, double beta) {
  double z = 0;
- for (auto const& es : atom.get_eigensystem())
-  for (auto e : es.eigenvalues) z += std::exp(-beta * e);
+ for (auto const& es : atom.get_eigensystem()) z += sum(exp(-beta * es.eigenvalues));
  return z;
 }
 
@@ -80,37 +80,32 @@ block_gf<imtime> atomic_gf(atom_diag const& atom, double beta, std::map<std::str
 
 double trace_rho_op(block_matrix_t const& density_matrix, many_body_op_t const& op, atom_diag const& atom) {
  h_scalar_t result = 0;
+ atom_diag_worker worker(const_cast<atom_diag*>(&atom));
  if (atom.n_blocks() != density_matrix.size()) TRIQS_RUNTIME_ERROR << "trace_rho_op : size mismatch : number of blocks differ";
  for (int bl = 0; bl < atom.n_blocks(); ++bl) {
   if (atom.get_block_dim(bl) != first_dim(density_matrix[bl]))
    TRIQS_RUNTIME_ERROR << "trace_rho_op : size mismatch : size of block " << bl << " differ";
-  for (auto const& x : op) {
-   auto b_m = atom.matrix_element_of_monomial(x.monomial, bl);
-   if (b_m.first != -1) result += x.coef * dot_product(b_m.second, density_matrix[bl]);
-  }
+  result += dot_product(worker.make_op_matrix(op,bl,bl), density_matrix[bl]);
  }
- if (imag(result) > threshold) TRIQS_RUNTIME_ERROR << "trace_rho_op: the result is not real.";
+ if (!triqs::utility::is_zero(imag(result),threshold)) TRIQS_RUNTIME_ERROR << "trace_rho_op: the result is not real.";
  return real(result);
 }
 
 // -----------------------------------------------------------------
 
 full_hilbert_space_state_t act(many_body_op_t const& op, full_hilbert_space_state_t const& st, atom_diag const& atom) {
- full_hilbert_space_state_t result(st.size());
- result() = 0;
- for (auto const& x : op) {
-  for (int bl = 0; bl < atom.n_blocks(); ++bl) {
-   auto b_m = atom.matrix_element_of_monomial(x.monomial, bl);
-   if (b_m.first == -1) continue;
-   result(atom.index_range_of_block(b_m.first)) += x.coef * b_m.second * st(atom.index_range_of_block(bl));
-  }
- }
- return result;
+ // FIXME: what basis should we use?
+ imperative_operator<hilbert_space, h_scalar_t> imp_op(op, atom.get_fops());
+ state<hilbert_space, h_scalar_t, false> st_(atom.get_full_hilbert_space());
+ st_.amplitudes() = st;
+ return imp_op(st_).amplitudes();
 }
 
 //---------------------
 
 std::vector<std::vector<quantum_number_t>> quantum_number_eigenvalues(many_body_op_t const& op, atom_diag const& atom) {
+
+ atom_diag_worker worker(const_cast<atom_diag*>(&atom));
 
  auto commutator = op * atom.get_h_atomic() - atom.get_h_atomic() * op;
  if (!commutator.is_zero()) TRIQS_RUNTIME_ERROR << "The operator is not a quantum number";
@@ -120,11 +115,8 @@ std::vector<std::vector<quantum_number_t>> quantum_number_eigenvalues(many_body_
  for (int bl = 0; bl < atom.n_blocks(); ++bl) {
   auto dim = atom.get_block_dim(bl);
   result.push_back(std::vector<quantum_number_t>(dim, 0));
-  for (auto const& x : op) {
-   auto b_m = atom.matrix_element_of_monomial(x.monomial, bl);
-   if (b_m.first != bl) continue;
-   for (int i = 0; i < dim; ++i) result.back()[i] += real(x.coef * b_m.second(i, i)); //FIXME leave general, cast into quantum_number_t before returning -- is this possible?
-  }
+  auto M = worker.make_op_matrix(op,bl,bl);
+  for (int i = 0; i < dim; ++i) result.back()[i] = real(M(i,i)); //FIXME leave general, cast into quantum_number_t before returning -- is this possible?
  }
  return result;
 }
@@ -134,7 +126,7 @@ std::vector<std::vector<quantum_number_t>> quantum_number_eigenvalues(many_body_
 template <typename M>
 // require (ImmutableMatrix<M>)
 bool is_diagonal(M const& m) {
- return ((sum(abs(m)) - trace(abs(m))) < threshold);
+ return triqs::utility::is_zero(sum(abs(m)) - trace(abs(m)), threshold);
 }
 
 std::vector<std::vector<quantum_number_t>> quantum_number_eigenvalues2(many_body_op_t const& op, atom_diag const& atom) {
