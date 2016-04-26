@@ -56,7 +56,7 @@ void atom_diag::complete_init() {
 // -----------------------------------------------------------------
 std::vector<std::vector<double>> atom_diag::get_energies() const {
  std::vector<std::vector<double>> R;
- for (auto const& es : eigensystems) { 
+ for (auto const& es : eigensystems) {
   R.emplace_back(std::begin(es.eigenvalues), std::end(es.eigenvalues));
  }
  return R;
@@ -180,6 +180,10 @@ std::pair<int, matrix<h_scalar_t>> atom_diag::matrix_element_of_monomial(operato
  }
  return {B, std::move(m)};
 }
+
+}
+
+namespace cthyb {
 
 // -----------------------------------------------------------------
 std::string get_triqs_hdf5_data_scheme(atom_diag::eigensystem_t const&) { return "atom_diag::eigensystem_t"; }

@@ -7,7 +7,6 @@
 using namespace cthyb;
 using triqs::operators::c;
 using triqs::operators::c_dag;
-using many_body_operator_real = triqs::operators::many_body_operator_generic<double>;
 
 // define operators
 auto n_up = c_dag("up") * c("up");
@@ -27,7 +26,7 @@ TEST(h_diag, Hubbard) {
  auto H = U * n_up * n_down + h*(n_up - n_down);
 
  // put quantum numbers in a vector
- std::vector<many_body_operator_real> qn_list{n_up, n_down};
+ std::vector<many_body_op_t> qn_list{n_up, n_down};
 
  // Divide the full Hilbert space
  atom_diag h_diag(H, fops, qn_list);
