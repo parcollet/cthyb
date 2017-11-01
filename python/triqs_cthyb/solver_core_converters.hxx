@@ -4,11 +4,9 @@
 
 
 // --- C++ Python converter for solve_parameters_t
-#include <triqs/python_tools/converters/vector.hpp>
-#include <triqs/python_tools/converters/string.hpp>
 #include <algorithm>
 
-namespace triqs { namespace py_tools {
+namespace cpp2py {
 
 template <> struct py_converter<solve_parameters_t> {
  static PyObject *c2py(solve_parameters_t const & x) {
@@ -195,4 +193,4 @@ template <> struct py_converter<solve_parameters_t> {
  }
 };
 
-}}
+}

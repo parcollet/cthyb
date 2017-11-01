@@ -38,8 +38,8 @@
 #include "./measures/perturbation_hist.hpp"
 #include "./measures/density_matrix.hpp"
 #include "./measures/average_sign.hpp"
-#include "./measures/G2_tau.hpp"
 #ifdef CTHYB_G2_NFFT
+#include "./measures/G2_tau.hpp"
 #include "./measures/G2_iw.hpp"
 #include "./measures/G2_iwll.hpp"
 #endif
@@ -250,10 +250,10 @@
 
     G2_measures_t G2_measures(_Delta_tau, gf_struct, params);
 
+#ifdef CTHYB_G2_NFFT
     // Imaginary-time binning
     if (params.measure_G2_tau) qmc.add_measure(measure_G2_tau{G2_tau, data, G2_measures}, "G2_tau imaginary-time measurement");
 
-#ifdef CTHYB_G2_NFFT
     // NFFT Matsubara frequency measures
     if (params.measure_G2_iw) qmc.add_measure(measure_G2_iw<G2_channel::AllFermionic>{G2_iw, data, G2_measures}, "G2_iw fermionic measurement");
     if (params.measure_G2_iw_pp) qmc.add_measure(measure_G2_iw<G2_channel::PP>{G2_iw_pp, data, G2_measures}, "G2_iw_pp particle-particle measurement");

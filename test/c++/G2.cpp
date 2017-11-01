@@ -24,7 +24,7 @@
 #include <triqs/gfs.hpp>
 #include <triqs/test_tools/gfs.hpp>
 
-#include "solver_core.hpp"
+#include "cthyb/solver_core.hpp"
 
 using namespace cthyb;
 using triqs::operators::c;

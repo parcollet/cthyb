@@ -23,9 +23,9 @@ r"""
 DOC
 
 """
-from cthyb_solver import Solver
-from cthyb import SolverCore
-from cthyb import (AtomDiag,
+from solver import Solver
+from solver_core import SolverCore
+from solver_core import (AtomDiag,
                    partition_function,
                    atomic_density_matrix,
                    atomic_gf, trace_rho_op, act,

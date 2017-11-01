@@ -1,40 +1,42 @@
 # Generated automatically using the command :
 # c++2py.py ../c++/solver_core.hpp -I../cbuild/c++ -I../c++ -p -m pytriqs.applications.impurity_solvers.cthyb -o cthyb --moduledoc "The cthyb solver"
-from wrap_generator import *
+from cpp2py.wrap_generator import *
 
 # The module
-module = module_(full_name = "pytriqs.applications.impurity_solvers.cthyb", doc = "The cthyb solver", app_name = "pytriqs.applications.impurity_solvers.cthyb")
+#module = module_(full_name = "pytriqs.applications.impurity_solvers.cthyb", doc = "The cthyb solver", app_name = "pytriqs.applications.impurity_solvers.cthyb")
+module = module_(full_name = "solver_core", doc = "", app_name = "solver_core")
 
-# All the triqs C++/Python modules
-module.use_module('operators', 'triqs')
-module.use_module('histograms', 'triqs')
+# Imports
+import pytriqs.gf
+import pytriqs.operators
+import pytriqs.statistics
 
 # Add here all includes beyond what is automatically included by the triqs modules
-module.add_include("solver_core.hpp")
-module.add_include("atom_diag.hpp")
+module.add_include("cthyb/solver_core.hpp")
+module.add_include("cthyb/atom_diag.hpp")
 
 module.add_enum("block_order", ["block_order::AABB","block_order::ABBA"], "cthyb", "Order of block indices for Block2Gf objects")
 
 # Add here anything to add in the C++ code at the start, e.g. namespace using
 module.add_preamble("""
-#include <triqs/python_tools/converters/optional.hpp>
-#include <triqs/python_tools/converters/gf.hpp>
-#include <triqs/python_tools/converters/block_gf.hpp>
-#include <triqs/python_tools/converters/block2_gf.hpp>
-#include <triqs/python_tools/converters/vector.hpp>
-#include <triqs/python_tools/converters/map.hpp>
-#include <triqs/python_tools/converters/set.hpp>
-#include <triqs/python_tools/converters/pair.hpp>
-#include <triqs/python_tools/converters/gf.hpp>
-#include <triqs/python_tools/converters/arrays.hpp>
-#include <triqs/python_tools/converters/variant.hpp>
-#include <triqs/python_tools/converters/tuple.hpp>
-#include <triqs/python_tools/converters/operators_real_complex.hpp>
-#include <triqs/python_tools/converters/fundamental_operator_set.hpp>
+#include <cpp2py/converters/map.hpp>
+#include <cpp2py/converters/set.hpp>
+#include <cpp2py/converters/optional.hpp>
+#include <cpp2py/converters/pair.hpp>
+#include <cpp2py/converters/string.hpp>
+#include <cpp2py/converters/vector.hpp>
+#include <cpp2py/converters/tuple.hpp>
+
+#include <triqs/cpp2py_converters/arrays.hpp>
+#include <triqs/cpp2py_converters/gf.hpp>
+#include <triqs/cpp2py_converters/operators_real_complex.hpp>
+#include <triqs/cpp2py_converters/fundamental_operator_set.hpp>
+#include <triqs/cpp2py_converters/variant.hpp>
+
 using namespace triqs::gfs;
 using triqs::operators::many_body_operator;
 using namespace cthyb;
-#include "./cthyb_converters.hxx"
+#include "solver_core_converters.hxx"
 """)
 
 # The class solver_core

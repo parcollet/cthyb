@@ -1,5 +1,5 @@
 #include <triqs/utility/first_include.hpp>
-#include "./atom_diag.hpp"
+#include "cthyb/atom_diag.hpp"
 #include <triqs/operators/many_body_operator.hpp>
 #include <triqs/hilbert_space/fundamental_operator_set.hpp>
 
