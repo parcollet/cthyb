@@ -15,7 +15,6 @@ message( STATUS "-------- BUILD-TYPE: ${CMAKE_BUILD_TYPE} -------------")
 option(Hybridisation_is_complex "If ON, the hybridization Delta(tau) is complex" OFF)
 option(Local_hamiltonian_is_complex "If ON, the H_loc is complex" OFF)
 option(MeasureG2 "Measure the two particle object (requires the NFFT library)" ON)
-option(Tests "Enable Tests" ON)
 
 # check that options are compatible
 if(Hybridisation_is_complex AND NOT Local_hamiltonian_is_complex)
@@ -51,7 +50,7 @@ message(STATUS "Git hash: ${CTHYB_GIT_HASH}")
 
 # Options for compilation that apply to everythings (C++ solver, Python interface, tests).
 add_compile_options(-std=c++14 
-                    -DCTHYB_GIT_HASH=${CTINT_GIT_HASH} -DTRIQS_GIT_HASH=${TRIQS_GIT_HASH}
+                    -DCTHYB_GIT_HASH=${CTHYB_GIT_HASH} -DTRIQS_GIT_HASH=${TRIQS_GIT_HASH}
                      $<$<CONFIG:Release>:-march=native>
                      $<$<CONFIG:Debug>:-DDEBUG_CTHYB>
                      $<$<BOOL:${Hybridisation_is_complex}>:-DHYBRIDISATION_IS_COMPLEX>
@@ -67,8 +66,9 @@ triqs_set_rpath_for_all_targets()
 add_subdirectory(cthyb)
 
 # Tests
-enable_testing()
+option(Tests "Enable Tests" ON)
 if (${Tests})
+ enable_testing()
  add_subdirectory(test)
 endif()
 
@@ -80,9 +80,6 @@ if (${TRIQS_WITH_PYTHON_SUPPORT})
  # Build the documentation
  option(Build_Documentation "Build documentation" OFF)
  if (${Build_Documentation})
-   if (NOT ${TRIQS_WITH_DOCUMENTATION})
-     message("Error: TRIQS library has not been compiled with its documentation")
-   endif()
    add_subdirectory(doc)
  endif()
  

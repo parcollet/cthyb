@@ -1,3 +1,7 @@
+if (NOT ${TRIQS_WITH_DOCUMENTATION})
+     message("Error: TRIQS library has not been compiled with its documentation")
+endif()
+
 # generate the conf.py
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
 
