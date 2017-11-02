@@ -17,6 +17,7 @@ endmacro()
 add_test_defs(h_diag_test rbt)
 if(NFFT_FOUND)
  add_test_defs(test_nfft)
+ target_link_libraries(test_nfft PRIVATE nfft)
 endif(NFFT_FOUND)
 
 add_test_defs(anderson)
