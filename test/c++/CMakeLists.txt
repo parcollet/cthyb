@@ -14,7 +14,6 @@ macro(add_test_defs name)
 endmacro()
 
 #
-add_test_defs(h_diag_test rbt)
 if(NFFT_FOUND)
  add_test_defs(test_nfft)
  target_link_libraries(test_nfft PRIVATE nfft)
@@ -36,4 +35,9 @@ add_test_defs(kanamori_offdiag _qn "QN")
 
 add_test_defs(legendre)
 add_test_defs(G2)
-add_test_defs(atomic_gf)
+
+add_test_defs(rbt)
+
+# Not ported, should be checked by atom_diag
+#add_test_defs(h_diag_test)
+#add_test_defs(atomic_gf)

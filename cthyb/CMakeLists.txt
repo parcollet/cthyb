@@ -1,8 +1,5 @@
 set(LIBRARY_SOURCES
     solver_core.cpp
-    atom_diag.cpp
-    atom_diag_functions.cpp
-    atom_diag_worker.cpp
     impurity_trace.cpp
     moves/insert.cpp
     moves/remove.cpp

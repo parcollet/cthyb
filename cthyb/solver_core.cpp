@@ -171,7 +171,7 @@
     // FIXME save h_loc to be able to rebuild h_diag in an analysis program.
     //if (_comm.rank() ==0) h5_write(h5::file("h_loc.h5",'w'), "h_loc", _h_loc, fops);
 
-    if (params.verbosity >= 2) std::cout << "Found " << h_diag.n_blocks() << " subspaces." << std::endl;
+    if (params.verbosity >= 2) std::cout << "Found " << h_diag.n_subspaces() << " subspaces." << std::endl;
 
     if (params.performance_analysis) std::ofstream("impurity_blocks.dat") << h_diag;
 

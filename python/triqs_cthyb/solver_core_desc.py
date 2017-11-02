@@ -10,10 +10,10 @@ module = module_(full_name = "solver_core", doc = "", app_name = "solver_core")
 import pytriqs.gf
 import pytriqs.operators
 import pytriqs.statistics
+import pytriqs.atom_diag
 
 # Add here all includes beyond what is automatically included by the triqs modules
 module.add_include("cthyb/solver_core.hpp")
-module.add_include("cthyb/atom_diag.hpp")
 
 module.add_enum("block_order", ["block_order::AABB","block_order::ABBA"], "cthyb", "Order of block indices for Block2Gf objects")
 
@@ -189,16 +189,16 @@ c.add_property(name = "G0_iw",
                getter = cfunction("block_gf_view<triqs::gfs::imfreq> G0_iw ()"),
                doc = """:math:`G_0(i\\omega)` in imaginary frequencies. """)
 
-c.add_property(name = "atomic_gf",
-               getter = cfunction("block_gf_view<triqs::gfs::imtime> atomic_gf ()"),
-               doc = """Atomic :math:`G(\\tau)` in imaginary time. """)
+# c.add_property(name = "atomic_gf",
+               # getter = cfunction("block_gf_view<triqs::gfs::imtime> atomic_gf ()"),
+               # doc = """Atomic :math:`G(\\tau)` in imaginary time. """)
 
 c.add_property(name = "density_matrix",
                getter = cfunction("std::vector<matrix_t> density_matrix ()"),
                doc = """Accumulated density matrix. """)
 
 c.add_property(name = "h_loc_diagonalization",
-               getter = cfunction("cthyb::atom_diag h_loc_diagonalization ()"),
+               getter = cfunction("atom_diag h_loc_diagonalization ()"),
                doc = """Diagonalization of :math:`H_{loc}`. """)
 
 c.add_property(name = "perturbation_order_total",
@@ -223,106 +223,5 @@ c.add_property(name = "solve_status",
 
 module.add_class(c)
 
-
-# The class atom_diag
-c = class_(
-        py_type = "AtomDiag",  # name of the python class
-        c_type = "atom_diag",   # name of the C++ class
-        hdf5 = True,
-        doc = r"",   # doc of the C++ class
-)
-
-c.add_constructor("""(many_body_op_t h_, triqs::hilbert_space::fundamental_operator_set fops)""",
-                  doc = """ """)
-
-c.add_constructor("""(many_body_op_t h_, triqs::hilbert_space::fundamental_operator_set fops, std::vector<many_body_op_t> qn_vector)""",
-                  doc = """ """)
-
-c.add_method("""int get_block_dim (int b)""",
-             doc = """The dimension of block b """)
-
-c.add_method("""int flatten_block_index (int block_index, int i)""",
-             doc = """Returns the index in the full hilbert space for block_index and i, the index within the block. """)
-
-c.add_method("""double get_eigenvalue (int block_index, int i)""",
-             doc = """Get the i-th eigenvalue of block bl """)
-
-c.add_method("""long c_connection (int op_linear_index, int block_index)""",
-             doc = """Connections for fundamental operators C\n\n op_linear_index : the linear index (i.e. number) of the c operator, as defined by the fundamental_operator_set fops\n block_number : the number of the initial block\n @return : the number of the final block """)
-
-c.add_method("""long cdag_connection (int op_linear_index, int block_index)""",
-             doc = """Connections for fundamental operators C^\\dagger\n\n op_linear_index : the linear index (i.e. number) of the c operator, as defined by the fundamental_operator_set fops\n block_number : the number of the initial block\n @return : the number of the final block """)
-
-c.add_method("""matrix<h_scalar_t> c_matrix (int op_linear_index, int block_index)""",
-             doc = """Matrix for fundamental operators C\n\n op_linear_index : the linear index (i.e. number) of the c operator, as defined by the fundamental_operator_set fops\n block_number : the number of the initial block\n @return : the number of the final block """)
-
-c.add_method("""matrix<h_scalar_t> cdag_matrix (int op_linear_index, int block_index)""",
-             doc = """Matrix for fundamental operators C^\\dagger\n\n op_linear_index : the linear index (i.e. number) of the c operator, as defined by the fundamental_operator_set fops\n block_number : the number of the initial block\n @return : the number of the final block """)
-
-c.add_property(name = "h_atomic",
-               getter = cfunction("many_body_op_t get_h_atomic ()"),
-               doc = """The Hamiltonian """)
-
-c.add_property(name = "fops",
-               getter = cfunction("triqs::hilbert_space::fundamental_operator_set get_fops ()"),
-               doc = """The fundamental operator set used at construction """)
-
-c.add_property(name = "full_hilbert_space_dim",
-               getter = cfunction("int get_full_hilbert_space_dim ()"),
-               doc = """Dimension of the full Hilbert space """)
-
-c.add_property(name = "n_blocks",
-               getter = cfunction("int n_blocks ()"),
-               doc = """Number of Blocks """)
-
-c.add_property(name = "fock_states",
-               getter = cfunction("std::vector<std::vector<fock_state_t>> get_fock_states ()"),
-               doc = """The list of fock states for each block """)
-
-c.add_property(name = "unitary_matrices",
-               getter = cfunction("std::vector<matrix<h_scalar_t>> get_unitary_matrices ()"),
-               doc = """Unitary matrices that transform from Fock states to atomic eigenstates """)
-
-c.add_property(name = "energies",
-               getter = cfunction("std::vector<std::vector<double>> get_energies ()"),
-               doc = """A vector of all the energies, by blocks. result[block_number][i] is the energy """)
-
-c.add_property(name = "quantum_numbers",
-               getter = cfunction("std::vector<std::vector<double>> get_quantum_numbers ()"),
-               doc = """A vector of all the QNs, by blocks : result[block_number][qn_index] is the ..... """)
-
-c.add_property(name = "gs_energy",
-               getter = cfunction("double get_gs_energy ()"),
-               doc = """Ground state energy (i.e. min of all subspaces). """)
-
-c.add_property(name = "vacuum_block_index",
-               getter = cfunction("int get_vacuum_block_index ()"),
-               doc = """Returns the block index of the vacuum state. """)
-
-c.add_property(name = "vacuum_inner_index",
-               getter = cfunction("int get_vacuum_inner_index ()"),
-               doc = """Returns the inner index of the vacuum state. """)
-
-c.add_property(name = "vacuum_state",
-               getter = cfunction("full_hilbert_space_state_t get_vacuum_state ()"),
-               doc = """Returns the vacuum state as a long vector in the full Hilbert space. """)
-
-module.add_class(c)
-
-#  Free functions
-
-module.add_function ("double partition_function (cthyb::atom_diag atom, double beta)", doc = """The atomic partition function""")
-
-module.add_function ("block_matrix_t atomic_density_matrix (cthyb::atom_diag atom, double beta)", doc = """The atomic density matrix""")
-
-module.add_function ("block_gf<imtime> atomic_gf (cthyb::atom_diag atom, double beta, std::map<std::string,indices_t> indices_list, int n_tau, std::vector<std::pair<int,int>> excluded_states = {})", doc = """The atomic green function, possibly with excluded states (default none)""")
-
-module.add_function ("double trace_rho_op (block_matrix_t density_matrix, many_body_op_t op, cthyb::atom_diag atom)", doc = "Trace (op * density_matrix)")
-
-module.add_function ("full_hilbert_space_state_t act (many_body_op_t op, full_hilbert_space_state_t st, cthyb::atom_diag atom)", doc = """Act with operator op on state st""")
-
-module.add_function ("std::vector<std::vector<double>> quantum_number_eigenvalues (many_body_op_t op, cthyb::atom_diag atom)", doc = """The operator op is supposed to be a quantum number (if not -> exception)\n @return the eigenvalue by block""")
-
-module.add_function ("std::vector<std::vector<double>> quantum_number_eigenvalues2 (many_body_op_t op, cthyb::atom_diag atom)", doc = """The operator op is supposed to be a quantum number (if not -> exception)\n @return the eigenvalue by block""")
 
 module.generate_code()

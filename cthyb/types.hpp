@@ -35,9 +35,12 @@ namespace std {
 
 namespace cthyb {
 
+  
   using namespace triqs::gfs;
   using namespace triqs::utility;
   using namespace triqs::statistics;
+
+  using atom_diag = triqs::atom_diag::atom_diag<is_h_scalar_complex>;
 
   using triqs::utility::time_pt;
   using op_t        = std::pair<time_pt, int>;
