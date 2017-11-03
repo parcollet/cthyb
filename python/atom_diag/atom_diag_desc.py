@@ -20,9 +20,8 @@
 ##############################################################################
 from cpp2py.wrap_generator import *
 
-module = module_(full_name = "pytriqs.atom_diag.atom_diag",
-                 doc = "Lightweight exact diagonalization solver",
-                 app_name = "triqs")
+module = module_(full_name = "atom_diag.atom_diag",
+                 doc = "Lightweight exact diagonalization solver")  #app_name = "triqs")
 
 import pytriqs.gf
 import pytriqs.operators
@@ -32,9 +31,9 @@ module.add_preamble("""
 #include <cpp2py/converters/vector.hpp>
 #include <cpp2py/converters/map.hpp>
 
-#include <triqs/atom_diag/atom_diag.hpp>
-#include <triqs/atom_diag/functions.hpp>
-#include <triqs/atom_diag/gf.hpp>
+#include <atom_diag/atom_diag.hpp>
+#include <atom_diag/functions.hpp>
+#include <atom_diag/gf.hpp>
 
 #include <triqs/cpp2py_converters/arrays.hpp>
 #include <triqs/cpp2py_converters/operators_real_complex.hpp>

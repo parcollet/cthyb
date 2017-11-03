@@ -6,8 +6,9 @@ from pytriqs.operators.util.hamiltonians import h_int_slater
 from pytriqs.operators.util.observables import *
 from pytriqs.archive import HDFArchive
 from pytriqs.gf import *
-from pytriqs.atom_diag import quantum_number_eigenvalues
-from triqs_cthyb import *
+#from pytriqs.atom_diag import quantum_number_eigenvalues
+from atom_diag import * # quantum_number_eigenvalues
+from cthyb import *
 
 beta = 100.0
 # H_int parameters

@@ -1,5 +1,5 @@
 # Generated automatically using the command :
-# c++2py ../../cthyb/solver_core.hpp -I../cbuild/c++ -I../c++ -p -m solver_core -o solver_core --moduledoc The cthyb solver --cxxflags="-std=c++14" -C pytriqs --only solver_core block_order -N cthyb
+# c++2py ../../cthyb/solver_core.hpp -p -m solver_core -o solver_core --moduledoc="The cthyb solver" --cxxflags="-std=c++14" -C pytriqs --only="solver_core block_order" -N cthyb -I../../
 from cpp2py.wrap_generator import *
 
 # The module

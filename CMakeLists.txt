@@ -70,21 +70,21 @@ add_subdirectory(atom_diag)
 option(Tests "Enable Tests" ON)
 if (${Tests})
  enable_testing()
- add_subdirectory(test/cthyb)
  add_subdirectory(test/atom_diag)
+ add_subdirectory(test/cthyb)
 endif()
 
 if (${TRIQS_WITH_PYTHON_SUPPORT})
 
  # Python interface
- add_subdirectory(python/cthyb)
  add_subdirectory(python/atom_diag)
+ add_subdirectory(python/cthyb)
  
  # Build the documentation
  option(Build_Documentation "Build documentation" OFF)
  if (${Build_Documentation})
-   add_subdirectory(doc/cthyb)
    add_subdirectory(doc/atom_diag)
+   add_subdirectory(doc/cthyb)
  endif()
  
 endif()

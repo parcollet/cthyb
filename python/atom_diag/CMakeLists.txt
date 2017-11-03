@@ -9,7 +9,7 @@ target_include_directories(atom_diag PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 #configure_file(version.py.in version.py)
 
 set(PYTHON_SOURCES
- ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py
+ __init__.py
  #${CMAKE_CURRENT_BINARY_DIR}/version.py
  )
 
