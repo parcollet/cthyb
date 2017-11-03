@@ -35,7 +35,6 @@ namespace std {
 
 namespace cthyb {
 
-  
   using namespace triqs::gfs;
   using namespace triqs::utility;
   using namespace triqs::statistics;
@@ -66,7 +65,9 @@ namespace cthyb {
   using G2_iwll_t              = block2_gf<imfreq_legendre_mesh_t, tensor_valued<4>>;
 
   enum class G2_channel { PP, PH, AllFermionic }; // G2 sampling channels
-  enum class block_order { AABB, ABBA };          // order of hybridization blocks G2
+
+  /// Order of block indices for Block2Gf objects 
+  enum class block_order { AABB, ABBA };
 
 } // namespace cthyb
 

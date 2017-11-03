@@ -51,9 +51,7 @@ install(TARGETS cthyb_c DESTINATION lib)
 
 # FIXME : WHY DO WE INSTALL HEADERS HERE ??
 set(HEADERS_TO_INSTALL
-    array_suppl.hpp # FIXME
-    atom_diag.hpp
-    atom_diag_functions.hpp
+ #array_suppl.hpp # FIXME
     solve_parameters.hpp
     solver_core.hpp
     config.hpp
