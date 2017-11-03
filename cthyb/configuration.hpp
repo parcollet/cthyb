@@ -22,8 +22,8 @@
 #include "./util.hpp"
 #include <triqs/hilbert_space/hilbert_space.hpp>
 #include <triqs/utility/time_pt.hpp>
-#include <triqs/atom_diag/atom_diag.hpp>
-#include <triqs/atom_diag/functions.hpp>
+#include <atom_diag/atom_diag.hpp>
+#include <atom_diag/functions.hpp>
 
 #include <map>
 

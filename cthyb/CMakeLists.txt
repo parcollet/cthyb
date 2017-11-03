@@ -22,7 +22,7 @@ if(MeasureG2)
 endif()
 
 add_library(cthyb_c ${LIBRARY_SOURCES})
-target_link_libraries(cthyb_c PUBLIC triqs)
+target_link_libraries(cthyb_c PUBLIC triqs atom_diag_c)
 
 # FIXME : should go ?
 option(EXT_DEBUG "Enable extended debugging output [developers only]" OFF)
