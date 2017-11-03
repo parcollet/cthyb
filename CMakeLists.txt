@@ -58,33 +58,36 @@ add_compile_options(-std=c++14
                      $<$<BOOL:${MeasureG2}>:-DCTHYB_G2_NFFT>
                      )
 # Common to all targets (ctint, python, tests).
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/atom_diag)
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/app_atom_diag)
 
 # To be fixed!!
 triqs_set_rpath_for_all_targets()
 
 add_subdirectory(cthyb)
-add_subdirectory(atom_diag)
+add_subdirectory(app_atom_diag/atom_diag)
 
 # Tests
 option(Tests "Enable Tests" ON)
 if (${Tests})
  enable_testing()
- add_subdirectory(test/atom_diag)
- add_subdirectory(test/cthyb)
+ add_subdirectory(app_atom_diag/test)
+ add_subdirectory(test)
 endif()
 
 if (${TRIQS_WITH_PYTHON_SUPPORT})
 
  # Python interface
- add_subdirectory(python/atom_diag)
+ add_subdirectory(app_atom_diag/python/atom_diag)
  add_subdirectory(python/cthyb)
- 
+
+ # For cpp2py generation to see atom_diag in ./python
+ execute_process(COMMAND ln -s ../app_atom_diag/python/atom_diag  python/atom_diag) 
+
  # Build the documentation
  option(Build_Documentation "Build documentation" OFF)
  if (${Build_Documentation})
-   add_subdirectory(doc/atom_diag)
-   add_subdirectory(doc/cthyb)
+   add_subdirectory(app_atom_diag/doc)
+   add_subdirectory(doc)
  endif()
  
 endif()

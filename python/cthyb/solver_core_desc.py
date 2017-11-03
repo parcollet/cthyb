@@ -1,12 +1,12 @@
 # Generated automatically using the command :
-# c++2py ../../cthyb/solver_core.hpp -p -m solver_core -o solver_core --moduledoc="The cthyb solver" --cxxflags="-std=c++14" -C pytriqs --only="solver_core block_order" -N cthyb -I../../
+# c++2py ../../cthyb/solver_core.hpp -p -m solver_core -o solver_core --moduledoc="The cthyb solver" --cxxflags="-std=c++14" -C pytriqs --only="solver_core block_order" -N cthyb -I../../app_atom_diag
 from cpp2py.wrap_generator import *
 
 # The module
 module = module_(full_name = "solver_core", doc = "The cthyb solver", app_name = "solver_core")
 
 # Imports
-import pytriqs.atom_diag
+import atom_diag
 import pytriqs.gf
 import pytriqs.operators
 import pytriqs.statistics.histograms
