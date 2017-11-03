@@ -56,4 +56,4 @@ set(HEADERS_TO_INSTALL
     solver_core.hpp
     config.hpp
 )
-install(FILES ${HEADERS_TO_INSTALL} DESTINATION include/triqs_cthyb)
+install(FILES ${HEADERS_TO_INSTALL} DESTINATION include/triqs/cthyb)

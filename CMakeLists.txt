@@ -75,7 +75,7 @@ endif()
 if (${TRIQS_WITH_PYTHON_SUPPORT})
 
  # Python interface
- add_subdirectory(python/triqs_cthyb)
+ add_subdirectory(python/cthyb)
  
  # Build the documentation
  option(Build_Documentation "Build documentation" OFF)
