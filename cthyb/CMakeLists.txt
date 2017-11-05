@@ -22,7 +22,20 @@ if(MeasureG2)
 endif()
 
 add_library(cthyb_c ${LIBRARY_SOURCES})
-target_link_libraries(cthyb_c PUBLIC triqs atom_diag_c)
+target_link_libraries(cthyb_c PUBLIC triqs)
+
+# Pubic options : any option affecting the headers should go here
+target_compile_options(cthyb_c PUBLIC 
+                     $<$<BOOL:${Hybridisation_is_complex}>:-DHYBRIDISATION_IS_COMPLEX>
+                     $<$<BOOL:${Local_hamiltonian_is_complex}>:-DLOCAL_HAMILTONIAN_IS_COMPLEX>
+		     )
+
+# Private options : any option here shoud affect ONLY the cpp
+target_compile_options(cthyb_c PRIVATE 
+                    -DCTHYB_GIT_HASH=${CTHYB_GIT_HASH} -DTRIQS_GIT_HASH=${TRIQS_GIT_HASH}
+		     #$<$<CONFIG:Debug>:-DDEBUG_CTHYB>
+                     $<$<BOOL:${MeasureG2}>:-DCTHYB_G2_NFFT>
+		     ) 
 
 # FIXME : should go ?
 option(EXT_DEBUG "Enable extended debugging output [developers only]" OFF)
@@ -31,7 +44,7 @@ if(EXT_DEBUG)
  target_compile_options(cthyb_c PRIVATE -DEXT_DEBUG)
 endif()
 
-# FIXME : should go
+# FIXME : To be simplied
 option(SAVE_CONFIGS "Save visited configurations to configs.h5 [developers only]" OFF)
 if(SAVE_CONFIGS)
  set(NUM_CONFIGS_TO_SAVE 50000 CACHE STRING "Number of visited configurations to save [developers only]")

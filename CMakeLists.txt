@@ -48,50 +48,38 @@ message(STATUS "-------- CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX} ---------
 triqs_get_git_hash_of_source_dir(CTHYB_GIT_HASH)
 message(STATUS "Git hash: ${CTHYB_GIT_HASH}")
 
-# Options for compilation that apply to everythings (C++ solver, Python interface, tests).
-add_compile_options(-std=c++14 
-                    -DCTHYB_GIT_HASH=${CTHYB_GIT_HASH} -DTRIQS_GIT_HASH=${TRIQS_GIT_HASH}
-                     $<$<CONFIG:Release>:-march=native>
-                     $<$<CONFIG:Debug>:-DDEBUG_CTHYB>
-                     $<$<BOOL:${Hybridisation_is_complex}>:-DHYBRIDISATION_IS_COMPLEX>
-                     $<$<BOOL:${Local_hamiltonian_is_complex}>:-DLOCAL_HAMILTONIAN_IS_COMPLEX>
-                     $<$<BOOL:${MeasureG2}>:-DCTHYB_G2_NFFT>
-                     )
+option(Tests "Enable Tests" ON)
+option(Documentation "Build documentation" OFF)
+
+# All PRIVATE common options.
+# The std for all targets
+add_compile_options(-std=c++14 $<$<CONFIG:Release>:-march=native>)
+
 # Common to all targets (ctint, python, tests).
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/app_atom_diag)
+include_directories(${CMAKE_SOURCE_DIR})
 
 # To be fixed!!
 triqs_set_rpath_for_all_targets()
 
 add_subdirectory(cthyb)
-add_subdirectory(app_atom_diag/atom_diag)
 
 # Tests
-option(Tests "Enable Tests" ON)
 if (${Tests})
  enable_testing()
- add_subdirectory(app_atom_diag/test)
  add_subdirectory(test)
 endif()
 
 if (${TRIQS_WITH_PYTHON_SUPPORT})
 
  # Python interface
- add_subdirectory(app_atom_diag/python/atom_diag)
  add_subdirectory(python/cthyb)
 
- # For cpp2py generation to see atom_diag in ./python
- execute_process(COMMAND ln -s ../app_atom_diag/python/atom_diag  python/atom_diag) 
-
  # Build the documentation
- option(Build_Documentation "Build documentation" OFF)
- if (${Build_Documentation})
-   add_subdirectory(app_atom_diag/doc)
+ if (${Documentation})
    add_subdirectory(doc)
  endif()
- 
-endif()
 
+endif()
 
 
 

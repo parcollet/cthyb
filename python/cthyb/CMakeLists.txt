@@ -2,7 +2,6 @@
 add_cpp2py_module(solver_core)
 
 target_link_libraries(solver_core cthyb_c)
-add_dependencies(solver_core atom_diag)
 
 # We need to include the convertes.hxx files
 target_include_directories(solver_core PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

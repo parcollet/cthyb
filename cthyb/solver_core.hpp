@@ -25,8 +25,8 @@
 #include <triqs/utility/callbacks.hpp>
 #include <triqs/operators/many_body_operator.hpp>
 #include <triqs/statistics/histograms.hpp>
-#include <atom_diag/atom_diag.hpp>
-#include <atom_diag/functions.hpp>
+#include <triqs/atom_diag/atom_diag.hpp>
+#include <triqs/atom_diag/functions.hpp>
 
 #include "types.hpp"
 #include "container_set.hpp"

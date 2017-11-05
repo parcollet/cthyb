@@ -6,10 +6,10 @@ from cpp2py.wrap_generator import *
 module = module_(full_name = "solver_core", doc = "The cthyb solver", app_name = "solver_core")
 
 # Imports
-import atom_diag
 import pytriqs.gf
 import pytriqs.operators
 import pytriqs.statistics.histograms
+import pytriqs.atom_diag
 
 # Add here all includes
 module.add_include("../../cthyb/solver_core.hpp")

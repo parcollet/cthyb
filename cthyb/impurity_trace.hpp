@@ -23,7 +23,7 @@
 #include "./solve_parameters.hpp"
 #include "triqs/utility/rbt.hpp"
 #include <triqs/statistics/histograms.hpp>
-#include <atom_diag/atom_diag.hpp>
+#include <triqs/atom_diag/atom_diag.hpp>
 
 //#define PRINT_CONF_DEBUG
 
